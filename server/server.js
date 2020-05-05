@@ -1,28 +1,35 @@
 const express = require('express')
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
-
+const mongoose = require('mongoose')
+const dotenv = require('dotenv')
 const app = express()
+
+const User = require('./models/user')
+
+dotenv.config()
+
+mongoose.connect(process.env.DATABASE, { useNewUrlParser: true, useUnifiedTopology: true }, err => {
+    if (err) {
+        console.log(err)
+    } else {
+        console.log('Connected to database')
+    }
+})
 
 // Middlewares
 app.use(morgan('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
-// GET Retrieve data from the server
-app.get('/', (req, res) => {
-    res.json('Hello world!')
-})
+// require apis
+const productRoutes = require('./routes/product')
+app.use('/api', productRoutes)
 
-// POST - send data from frontend to backend
-app.post('/', (req, res) => {
-    console.log(req.body)
-})
-
-app.listen(3000, (err) => {
+app.listen(7000, (err) => {
     if (err) {
         console.log(err)
     } else {
-        console.log('listen 3000')
+        console.log('listen 7000')
     }
 })
